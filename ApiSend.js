@@ -47,8 +47,7 @@ export default class ApiSend extends Component {
                         });
                         console.log("Sending json...");
                         let response = await fetch(
-                                'https://vision.googleapis.com/v1/images:annotate?key=' +
-                                        config.googleCloud.apiKey,
+                                config.googleCloud.api + config.googleCloud.apiKey,
                                 {
                                         headers: {
                                                 Accept: 'application/json',
