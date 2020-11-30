@@ -15,8 +15,8 @@ app.use(Cors());
 
 // DB config
 const mongoUrl = 
-    "mongodb+srv://jacky:vt9VVsisu6iLvEBp@cluster0.rvtoj.mongodb.net/SnapGo?retryWrites=true&w=majority";
-    
+    "mongodb+srv://jacky:<password>@cluster0.rvtoj.mongodb.net/<dbname>?retryWrites=true&w=majority";
+
 mongoose.connect(mongoUrl,{
     useCreateIndex: true,
     useNewUrlParser: true,
