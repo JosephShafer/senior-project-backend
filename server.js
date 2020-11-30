@@ -1,26 +1,75 @@
-// importing
 import express from 'express';
 import mongoose from 'mongoose';
+import Cors from 'cors';
+import Prices from './models/PriceModel.js';
+import Users from './models/UserModel.js';
 
-// app config
-const app = express()
-const port = process.env.PORT || 9000;
+// App config
+const app = express();
+const port = process.env.PORT || 8001;
 
 
-// middlewares
+// Middlewares
+app.use(express.json());
+app.use(Cors());
 
 // DB config
-const mongoUri = 'mongodb+srv://jacky:<password>@cluster0.rvtoj.mongodb.net/SnapGo?retryWrites=true&w=majority';
-mongoose.connect(mongoUri,{
+const mongoUrl = 
+    "mongodb+srv://jacky:vt9VVsisu6iLvEBp@cluster0.rvtoj.mongodb.net/SnapGo?retryWrites=true&w=majority";
+    
+mongoose.connect(mongoUrl,{
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
 
-// ?????
+// API Endpoints
+app.get("/", (req, res) => res.status(200).send("HELLO WORLD"));
 
-// API routes
-app.get("/", (req, res) => res.status(200).send('HELLO WORLD'));
+/* Post/Get methods for signup and login soon - work with ryan to discuss security of passwords */
 
-// listener
-app.listen(port, () => console.log(`Listening on localhost: ${PORT}`));
+app.post("/snapGo/users", (req, res) => {
+    const dbUser = req.body;
+    Users.create(dbUser, (err, data) => {
+        if (err) {
+            res.status(500).send(err);
+        } else{
+            res.status(201).send(data);
+        }
+    });
+});
+
+app.get("/snapGo/users", (req, res) => {
+    Users.find((err, data) => {
+        if (err) {
+            res.status(500).send(err);
+        } else{
+            res.status(200).send(data);
+        }
+    });
+});
+
+
+app.post("/snapGo/prices", (req, res) => {
+    const dbPrices = req.body;
+    Prices.create(dbPrices, (err, data) => {
+        if (err) {
+            res.status(500).send(err);
+        } else{
+            res.status(201).send(data);
+        }
+    });
+});
+
+app.get("/snapGo/prices", (req, res) => {
+    Prices.find((err, data) => {
+        if (err) {
+            res.status(500).send(err);
+        } else{
+            res.status(200).send(data);
+        }
+    });
+});
+
+// Listener
+app.listen(port, () => console.log(`Listening on http://localhost:${port}`));
