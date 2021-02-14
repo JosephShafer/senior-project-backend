@@ -1,5 +1,7 @@
 // J.V. Created: 01-29-2021
 
+// J.V. Update 02-14-2021: Added option for scraping pinterest for Arts & Crafts ideas
+
 let Crawler = require("crawler");
 
 
@@ -15,6 +17,7 @@ function crawl(idx, site, target) {
                         kaplanco(res, target, site);
                         break;
                     case 1:
+                        pinterest(res, target, site);
                         break;
                 }
             }
@@ -33,6 +36,7 @@ function crawl(idx, site, target) {
             }
             break;
         case 1:
+            // Pinterest
             crawler.queue(site);
             break;
     }
@@ -42,7 +46,7 @@ function crawl(idx, site, target) {
 function kaplanco(res, target, site) {
     let $ = res.$;      // $ = Cheerio
     let products = $(".product-info").contents();
-    let numProducts = $(".product-info").contents().length;
+    let numProducts = products.length;
     for(let i=0; i<numProducts; i++) {
         if(products[i].attribs.class == "product-title") {
             let title = products[i].children[0].data;
@@ -50,6 +54,22 @@ function kaplanco(res, target, site) {
             let link = products[i].attribs.href;
             if(title.includes(target)) {
                 console.log(title + "\t\t\t" + site.substr(0,24) + link);       // link for products just has domain name with href
+            }
+        }
+    }
+}
+
+function pinterest(res, target, site) {
+    let $ = res.$;
+    let ideas = $(".GrowthUnauthPinImage").contents();
+    let len = ideas.length;
+    for(let i=0; i<len; i++) {
+        if(ideas[i].name == 'a') {
+            let obj = ideas[i];
+            let title = obj.attribs.title;
+            let link = obj.attribs.href;
+            if(title != undefined && title.includes(target)) {
+                console.log(obj.attribs.title + "\n" + site.substr(0, 25) + link + "\n\n");
             }
         }
     }
