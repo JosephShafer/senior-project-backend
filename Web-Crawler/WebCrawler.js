@@ -1,6 +1,7 @@
 // J.V. Created: 01-29-2021
 
 // J.V. Update 02-14-2021: Added option for scraping pinterest for Arts & Crafts ideas
+// J.V. Update 02-16-2021: Small bug fix
 
 let Crawler = require("crawler");
 
@@ -66,7 +67,7 @@ function pinterest(res, target, site) {
     for(let i=0; i<len; i++) {
         if(ideas[i].name == 'a') {
             let obj = ideas[i];
-            let title = obj.attribs.title;
+            let title = obj.attribs.title.toLowerCase();
             let link = obj.attribs.href;
             if(title != undefined && title.includes(target)) {
                 console.log(obj.attribs.title + "\n" + site.substr(0, 25) + link + "\n\n");
