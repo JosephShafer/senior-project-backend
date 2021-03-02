@@ -21,17 +21,17 @@ const PORT = process.env.PORT || 3000;
 APP.use(express.json());
 
 APP.post("/webcrawl", async function(req, res) {
-	try {
-		let target = req.body.searchTerm;
-		await console.log(`Received JSON response. Searching for ${target}`);
-		// All results will be written to files
-		for(let idx = 0; idx < sites.length; idx++) {
+	let target = req.body.searchTerm;
+	console.log(`Received JSON response. Searching for ${target}`);
+	// All results will be written to files
+	for(let idx = 0; idx < sites.length; idx++) {
+		try {
 			await WC.crawl(idx, sites[idx], target);
+		} catch(err) {
+			console.log(err);
 		}
-		await console.log("Finished web crawling");
-	} catch(err) {
-		console.log(err);
 	}
+	console.log("Finished web crawling");
 });
 
 APP.listen(PORT, function() {
