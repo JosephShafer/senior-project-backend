@@ -13,19 +13,25 @@
 let express = require("express");
 let WC = require("./WebCrawler.js");
 let sites = ["https://www.kaplanco.com/shop/arts-and-crafts/collage-and-craft-materials",
-             "https://www.pinterest.com/caytonmuseum/arts-craft-ideas/",
-            ]
+	"https://www.pinterest.com/caytonmuseum/arts-craft-ideas/",
+]
 const APP = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 APP.use(express.json());
 
-APP.post("/webcrawl", function(req, res) {
-	console.log(req.body);
-	let target = req.body.searchTerm;
-	// All results will be written to files
-	for(let idx = 0; idx < sites.length; idx++)
-	    WC.crawl(idx, sites[idx], target);
+APP.post("/webcrawl", async function(req, res) {
+	try {
+		let target = req.body.searchTerm;
+		await console.log(`Received JSON response. Searching for ${target}`);
+		// All results will be written to files
+		for(let idx = 0; idx < sites.length; idx++) {
+			await WC.crawl(idx, sites[idx], target);
+		}
+		await console.log("Finished web crawling");
+	} catch(err) {
+		console.log(err);
+	}
 });
 
 APP.listen(PORT, function() {
