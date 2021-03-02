@@ -9,7 +9,7 @@ import {
 import { Camera } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
 import { FontAwesome, Ionicons,MaterialCommunityIcons } from '@expo/vector-icons';
-import config from './config';
+import config from './config.json';
 
 export default class ApiSend extends Component {
 	constructor(props) {
