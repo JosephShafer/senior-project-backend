@@ -2,9 +2,22 @@
 
 // J.V. Update 02-14-2021: Added option for scraping pinterest for Arts & Crafts ideas
 // J.V. Update 02-16-2021: Small bug fix
+// J.V. Update 03-01-2021: Links to products and project ideas are now written to files
 
 let Crawler = require("crawler");
-
+let fs = require("fs");
+let productsFile = "products.txt";
+let projectsFile = "projectIdeas.txt";
+try {
+    fs.unlinkSync(productsFile);
+} catch(err) {
+    console.log("Products file not found. Will generate new one on search\n");
+}
+try {
+    fs.unlinkSync(projectsFile);
+} catch(err) {
+    console.log("Projects file not found. Will generate new one on search\n");
+}
 
 // Main function
 function crawl(idx, site, target) {
@@ -45,6 +58,7 @@ function crawl(idx, site, target) {
 
 // Individual web page traversal
 function kaplanco(res, target, site) {
+    let results = new Array();
     let $ = res.$;      // $ = Cheerio
     let products = $(".product-info").contents();
     let numProducts = products.length;
@@ -54,13 +68,20 @@ function kaplanco(res, target, site) {
             title = title.toLowerCase();
             let link = products[i].attribs.href;
             if(title.includes(target)) {
-                console.log(title + "\t\t\t" + site.substr(0,24) + link);       // link for products just has domain name with href
+		let source = site.substr(0,24) + link + "\n";
+                results.push(source);       // link for products just has domain name with href
             }
         }
+    }
+    for(let i=0; i<results.length; i++) {
+	    fs.appendFile(productsFile, results[i], function(err) {
+		    if(err) return console.log(err);
+	    });
     }
 }
 
 function pinterest(res, target, site) {
+    let results = new Array();
     let $ = res.$;
     let ideas = $(".GrowthUnauthPinImage").contents();
     let len = ideas.length;
@@ -70,9 +91,16 @@ function pinterest(res, target, site) {
             let title = obj.attribs.title.toLowerCase();
             let link = obj.attribs.href;
             if(title != undefined && title.includes(target)) {
-                console.log(obj.attribs.title + "\n" + site.substr(0, 25) + link + "\n\n");
+//                console.log(obj.attribs.title + "\n" + site.substr(0, 25) + link);
+		let source = site.substr(0,25) + link + "\n";
+               	results.push(source);
             }
         }
+    }
+    for(let i=0; i<results.length; i++) {
+	    fs.appendFile(projectsFile, results[i], function(err) {
+		    if(err) return console.log(err);
+	    });
     }
 }
 
