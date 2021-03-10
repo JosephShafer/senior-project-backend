@@ -6,32 +6,33 @@ const SALT = 10;
 const userSchema = mongoose.Schema({
     firstName: {
         type: String,
-        required: true,
-        trim: true,
+        required: [true, 'first name is required'],
+        trim: true
     },
     lastName: {
         type: String,
-        required: true,
-        trim: true,
+        required: [true, 'last name is required'],
+        trim: true
     },
     email: {
         type: String,
-        required: true,
+        required: [true, 'email is required'],
         trim: true,
         unique: true
     },
     username:{
         type: String,
-        required: true,
+        required: [true, 'user name is required'],
         trim: true,
-        unique: true,
+        unique: true
     },
     password: {
         type: String,
-        required: true,
-    }
+        required: [true, 'password is required']
+    },
+    reset_password_token: String,
+    reset_password_expires: Date
 });
-
 
 // bcrypt
 userSchema.pre('save', function(next){
