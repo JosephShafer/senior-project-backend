@@ -1,2 +1,5 @@
-/node_modules
+*/node_modules/
+*/products.txt
+*/projectIdeas.txt
+*/config.json
 .env
