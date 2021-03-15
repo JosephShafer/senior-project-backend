@@ -1,5 +1,4 @@
 import express from 'express';
-import { google } from 'googleapis';
 import Users from '../models/user.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
@@ -7,31 +6,15 @@ import dotenv  from "dotenv";
 dotenv.config();
 
 const router = express.Router();
-// Nodemailer using Gmail with Oath2 authentication
-// Without oath2, Gmail account must enable less secure apps.
-const oauth2Client = new google.auth.OAuth2(
-    process.env.CLIENT_ID, 
-    process.env.CLIENT_SECRET,
-    process.env.REDIRECT_URI
-);
 
-oauth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
-
-const accessToken = await oauth2Client.getAccessToken();
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        type: 'OAuth2',
         user: process.env.MAILER_EMAIL,
-        //pass: process.env.MAILER_PASSWORD,
-        clientId: process.env.CLIENT_UD,
-        clientSecret: process.env.CLIENT_SECRET,
-        refreshToken: process.env.REFRESH_TOKEN,
-        accessToken: accessToken
+        pass: process.env.MAILER_PASSWORD
     }
 });
 
-// FORGOT PASSWORD
 router.put('/forgot_password', (req, res) => {
     const email = req.body.email;
     Users
@@ -54,7 +37,6 @@ router.put('/forgot_password', (req, res) => {
         .then(user => {
             const token = user.reset_password_token;
             const uri = encodeURIComponent(`://youripaddress:19000/--/reset_password/${token}`);
-            // STEP 2
             const mailOptions = {
                 from: process.env.MAILER_EMAIL,
                 to: email,
@@ -72,7 +54,6 @@ router.put('/forgot_password', (req, res) => {
                 </div>
                 `
             };
-            // STEP 3
             transporter.sendMail(mailOptions, (err, info) => {
                 if (err) {
                     console.log(err);
