@@ -1,49 +1,45 @@
-import express from 'express';
-import Users from '../models/user.js';
-import bcrypt from 'bcrypt';
-import dotenv  from "dotenv";
-dotenv.config();
+const express = require ('express');
+const Users = require ('../models/user.js');
+const bcrypt = require ('bcrypt');
 
 const router = express.Router();
 
-router.get('/reset_password', (req, res) => {
+router.get('/', (req, res) => {
     const { token } = req.query;
-    Users
-        .findOne({
+    Users.findOne({
             reset_password_token: token,
             reset_password_expires: { $gt: Date.now() }
         })
         .then(user => {
             if (!user) {
-                res.json({success: false, msg: "Reset passwork link is invalid or expired!"});
+                res.json({success: false, msg: "Reset passwork link is invalid/expired!"});
             } else {
-                res.status(200).json({success: true, username: user.username, email: user.email })
+                res.status(200).json({success: true})
             }
         })
-        .catch(err => console.log("Error when open reset_password link: " + err));   
+        .catch(err => console.log("Error when opening link: " + err));   
 });
 
-router.put('/reset_password', (req, res) => {
+// store new hashed password
+router.put('/', (req, res) => {
     const { token, newPass } = req.body;
-
-    bcrypt.hash(newPass, 10, (err, hashedPWD) => {
+    bcrypt.hash(newPass, 10, (err, hash) => {
         if (err) {
-            res.status(422).json({resetPW: false, "error": err});
+            res.status(422).json({success: false, msg: err});
         } else {
-            const newHashedPWD = hashedPWD;
-            Users
-                .findOneAndUpdate(
-                    { reset_password_token: token },
-                    { 
-                        password: newHashedPWD,
-                        reset_password_expires: null,
-                        reset_password_token: '', 
-                    },
-                )
-                .then(result => res.status(200).json({resetPW: true, result}))
-                .catch(err => console.log("Error when updating password: " + err));
+            const newHashedPass = hash;
+            Users.findOneAndUpdate({ reset_password_token: token },
+                {
+                    // update pwd expiration and empty token
+                    password: newHashedPass,
+                    reset_password_expires: null,
+                    reset_password_token: '', 
+                },
+            )
+            .then(() => console.log('Password update successful'))
+            .catch(err => console.log("Error when updating password: " + err));
         }
     });
 });
 
-export default router;
+module.exports = router;

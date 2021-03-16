@@ -1,5 +1,5 @@
-import express from 'express';
-import Prices from '../models/prices.js'
+const express = require('express');
+const Prices = require('../models/prices.js');
 
 const router = express.Router();
 
@@ -24,4 +24,4 @@ router.get("/", (req, res) => {
     });
 });
 
-export default router;
+module.exports = router;

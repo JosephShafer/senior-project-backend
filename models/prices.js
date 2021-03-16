@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const storeSchema = mongoose.Schema({
     strName: String,
@@ -21,4 +21,4 @@ const priceSchema = mongoose.Schema({
     }
 });
 
-export default mongoose.model('prices', priceSchema);
+module.exports = mongoose.model('prices', priceSchema);

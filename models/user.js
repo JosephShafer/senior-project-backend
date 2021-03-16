@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const SALT = 10;
 
@@ -31,7 +31,7 @@ const userSchema = mongoose.Schema({
         required: [true, 'password is required']
     },
     reset_password_token: String,
-    reset_password_expires: Date
+    reset_password_expires: {type: Date, default: Date.now}
 });
 
 // bcrypt
@@ -39,11 +39,9 @@ userSchema.pre('save', function(next){
     var aUser = this;
     if (aUser.isModified('password')) {
         bcrypt.genSalt(SALT, function(err, salt){
-            if (err) 
-                return next(err)
+            if (err) return next(err)
             bcrypt.hash(aUser.password, salt, function(err, hash) {
-                if (err) 
-                    return next(err)
+                if (err) return next(err)
                 aUser.password = hash;
                 next();
             });
@@ -56,8 +54,7 @@ userSchema.pre('save', function(next){
 // for comparing the users entered password with DB during login 
 userSchema.methods.comparePassword = function(clientPassword, callBack){
     bcrypt.compare(clientPassword, aUser.password, function(err, isMatch){
-        if (err) 
-            return callBack(err);
+        if (err) return callBack(err);
         else {
             if(!isMatch)
                 callBack(null, isMatch);
@@ -66,4 +63,4 @@ userSchema.methods.comparePassword = function(clientPassword, callBack){
    });
 }
 
-export default mongoose.model('user', userSchema);
+module.exports = mongoose.model('user', userSchema);
