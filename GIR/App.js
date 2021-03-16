@@ -27,25 +27,7 @@ export default class App extends Component {
 		const { status } = await Permissions.askAsync(Permissions.CAMERA);
 		this.setState({ hasPermission: status === 'granted' });
 	}
-	async callWebCrawler(target) {
-		try {
-			console.log("Attempting connection to AWS server...");
-			let response = await fetch(config.AWS.ip, {
-				method: "POST",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					searchTerm: target,
-				}),
-			});
-			var responseJson = await response.json();
-			console.log("Connection successfully made.");
-		} catch(err) {
-			console.log(err);
-		}
-	}
+
 	takePicture = async () => {
 		if (this.Camera) {
 			const options = {quality: 0.5, base64: true};
@@ -57,8 +39,8 @@ export default class App extends Component {
 			});
 			try {
 				let res = await this.apiSend.googleVision(photo.base64);
-				console.log("API's strongest guess: " + res);
-				this.callWebCrawler(res);
+				// console.log("API's strongest guess: " + res);
+				// this.callWebCrawler(res);
 			}
 			catch(err) {
 				console.log(err);

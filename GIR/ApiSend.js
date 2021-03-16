@@ -21,6 +21,26 @@ export default class ApiSend extends Component {
 		apiResult: undefined,
 	}
 
+        async callWebCrawler(target) {
+		try {
+			console.log("Attempting connection to AWS server...");
+			let response = await fetch(config.AWS.ip, {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					searchTerm: target,
+				}),
+			});
+			var responseJson = await response.json();
+			console.log("Connection successfully made.");
+		} catch(err) {
+			console.log(err);
+		}
+	}
+
 	googleVision = async (base64) => {
                 this.setState({ loading: true });
 		try {
@@ -66,7 +86,7 @@ export default class ApiSend extends Component {
                         console.log(error);
                 }
 		this.setState({ loading: false });
-		return this.state.apiResult;
+		await this.callWebCrawler(this.state.apiResult);
         }
 	render() {
 		return null;
