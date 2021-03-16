@@ -1,15 +1,13 @@
-import express from 'express';
-import mongoose from 'mongoose';
-// import bcrypt from 'bcrypt';
-import cors from 'cors';
-import dotenv  from "dotenv";
-dotenv.config();
+const express = require ('express');
+const mongoose = require ('mongoose');
+const cors = require ('cors');
+require('dotenv').config()
 
 /* Import Routers */
-import priceRouter from './routes/prices.js';
-import usersRouter from './routes/user.js';
-import forgotPassRouter from './routes/forgotPass.js';
-import resetPassRouter from './routes/resetPass.js';
+const priceRouter = require ('./routes/prices.js');
+const usersRouter = require ('./routes/user.js');
+const forgotPassRouter = require ('./routes/forgotPass.js');
+const resetPassRouter = require ('./routes/resetPass.js');
 let WC = require("./Web-Crawler/WebCrawler.js");
 let sites = ["https://www.kaplanco.com/shop/arts-and-crafts/collage-and-craft-materials",
 	         "https://www.pinterest.com/caytonmuseum/arts-craft-ideas/",
@@ -22,12 +20,12 @@ app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 
 /* Using Routers */
-app.use('/snapGo/prices', priceRouter);
-app.use('/snapGo/users', usersRouter);
-app.use('/forgotPass', forgotPassRouter);
-app.use('/resetPass', resetPassRouter);
+app.use('/prices', priceRouter);
+app.use('/users', usersRouter);
+app.use('/forget_password', forgotPassRouter);
+app.use('/reset_password', resetPassRouter);
 
-/* Connect to MongoDB */
+/* Connect to DB */
 mongoose.connect(process.env.LOCAL_MONGO, {
     useCreateIndex: true,
     useNewUrlParser: true,
