@@ -34,8 +34,9 @@ router.put('/', (req, res) => {
         })
         .then(user => {
             const token = user.reset_password_token;
+            const aws = process.env.AWS_URI;
             // encodes characters such as ?,=,/,&,:
-            const uri = encodeURIComponent(`://youripaddress:19000/--/reset_password/${token}`);
+            const uri = encodeURIComponent(`://${aws}:19000/--/reset_password/${token}`);
             const mailOptions = {
                 from: process.env.MAILER_EMAIL,
                 to: email,
@@ -61,7 +62,7 @@ router.put('/', (req, res) => {
                 }
             })
         })
-        .catch(err => console.log("Error when verifying the email of reseting pw: " + err));
+        .catch(err => console.log("Error when verifying the email: " + err));
 });
 
 module.exports = router;

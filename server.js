@@ -13,7 +13,7 @@ let sites = ["https://www.kaplanco.com/shop/arts-and-crafts/collage-and-craft-ma
 	         "https://www.pinterest.com/caytonmuseum/arts-craft-ideas/",
 ]
 
-const port = process.env.PORT || 8001;
+const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
@@ -26,7 +26,7 @@ app.use('/forget_password', forgotPassRouter);
 app.use('/reset_password', resetPassRouter);
 
 /* Connect to DB */
-mongoose.connect(process.env.LOCAL_MONGO, {
+mongoose.connect(process.env.MONGO_URI, {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
