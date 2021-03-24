@@ -1,5 +1,4 @@
 node_modules/
-*/products.txt
-*/projectIdeas.txt
+*.txt
 */config.json
 .env
