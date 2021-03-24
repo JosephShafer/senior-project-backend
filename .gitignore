@@ -1,4 +1,4 @@
 node_modules/
-*.txt
+Web-Crawler/cachedResults/*.txt
 */config.json
 .env
