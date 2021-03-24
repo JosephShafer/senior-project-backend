@@ -6,8 +6,6 @@
 
 let Crawler = require("crawler");
 let fs = require("fs").promises;
-let productsFile = "products.txt";
-let projectsFile = "projectIdeas.txt";
 /*
 try {
 	    fs.unlinkSync(productsFile);
@@ -22,7 +20,7 @@ try {
 */
 
 // Main function
-async function crawl(idx, site, target) {
+async function crawl(idx, site, target, productsFile, projectsFile) {
 	let crawler = new Crawler({
 		callback: async function(err, res, done) {
 			if(err) {
@@ -30,10 +28,10 @@ async function crawl(idx, site, target) {
 			} else {
 				switch(idx) {
 					case 0:
-						kaplanco(res, target, site);
+						kaplanco(res, target, site, productsFile);
 						break;
 					case 1:
-						pinterest(res, target, site);
+						pinterest(res, target, site, projectsFile);
 						break;
 				}
 			}
@@ -59,7 +57,7 @@ async function crawl(idx, site, target) {
 }
 
 // Individual web page traversal
-async function kaplanco(res, target, site) {
+async function kaplanco(res, target, site, productsFile) {
 	let results = new Array();
 	let $ = res.$;      // $ = Cheerio
 	let products = $(".product-info").contents();
@@ -87,7 +85,7 @@ async function kaplanco(res, target, site) {
 	}
 }
 
-async function pinterest(res, target, site) {
+async function pinterest(res, target, site, projectsFile) {
 	let results = new Array();
 	let $ = res.$;
 	let ideas = $(".GrowthUnauthPinImage").contents();

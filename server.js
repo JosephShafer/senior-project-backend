@@ -8,6 +8,7 @@ const priceRouter = require ('./routes/prices.js');
 const usersRouter = require ('./routes/user.js');
 const forgotPassRouter = require ('./routes/forgotPass.js');
 const resetPassRouter = require ('./routes/resetPass.js');
+const fs = require('fs');
 let WC = require("./Web-Crawler/WebCrawler.js");
 let sites = ["https://www.kaplanco.com/shop/arts-and-crafts/collage-and-craft-materials",
 	         "https://www.pinterest.com/caytonmuseum/arts-craft-ideas/",
@@ -39,16 +40,46 @@ mongoose.connect(process.env.MONGO_URI, {
 // JV. 03-15-2021: Manually merged branches
 app.post("/webcrawl", async function(req, res) {
 	let target = req.body.searchTerm;
+	let timeStamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') + "\n";
+	let productsFile = "./Web-Crawler/cachedResults/" + target + "-products.txt";
+	let projectsFile = "./Web-Crawler/cachedResults/" + target + "-projects.txt";
+	// Check if these files exist
+	try {
+		if(await fs.existsSync(productsFile)) {
+			// Check date if it does exist
+
+		} else {
+			console.log("Products file not found for " + target + ". Will create new file.");
+			await fs.writeFile(productsFile, timeStamp, async function(err) {
+				if(err) throw err;
+			});
+		}
+	} catch(err) {
+		console.log(err);
+	}
+	try {
+		if(await fs.existsSync(projectsFile)) {
+
+		} else {
+			console.log("Projects file not found for " + target + ". Will create new file.");
+			await fs.writeFile(projectsFile, timeStamp, async function(err) {
+				if(err) throw err;
+			});
+		}
+	} catch(err) {
+		console.log(err);
+	}
 	console.log(`Received JSON response. Searching for ${target}`);
 	// All results will be written to files
 	for(let idx = 0; idx < sites.length; idx++) {
 		try {
-			await WC.crawl(idx, sites[idx], target);
+			await WC.crawl(idx, sites[idx], target, productsFile, projectsFile);
 		} catch(err) {
 			console.log(err);
 		}
 	}
 	console.log("Finished web crawling");
+	res.end();
 });
 
 

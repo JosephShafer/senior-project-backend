@@ -1,5 +1,4 @@
 node_modules/
-*/products.txt
-*/projectIdeas.txt
+Web-Crawler/cachedResults/
 */config.json
 .env
