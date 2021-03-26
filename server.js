@@ -12,7 +12,7 @@ const fs = require('fs');
 const readline = require('readline');
 let WC = require("./Web-Crawler/WebCrawler.js");
 let sites = ["https://www.kaplanco.com/shop/arts-and-crafts/collage-and-craft-materials",
-	         "https://www.pinterest.com/caytonmuseum/arts-craft-ideas/",
+	"https://www.pinterest.com/caytonmuseum/arts-craft-ideas/",
 ]
 
 const port = process.env.PORT || 3000;
@@ -29,33 +29,33 @@ app.use('/reset_password', resetPassRouter);
 
 /* Connect to DB */
 mongoose.connect(process.env.MONGO_URI, {
-    useCreateIndex: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
+	useCreateIndex: true,
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+	useFindAndModify: false
 })
-.then(() => console.log('database connected...'))
-.catch(err => console.log(err));
+	.then(() => console.log('database connected...'))
+	.catch(err => console.log(err));
 
 // Read first line of file
 async function getFirstLine(pathToFile) {
-  const readable = fs.createReadStream(pathToFile);
-  const reader = readline.createInterface({ input: readable });
-  const line = await new Promise((resolve) => {
-    reader.on('line', (line) => {
-      reader.close();
-      resolve(line);
-    });
-  });
-  readable.close();
-  return line;
+	const readable = fs.createReadStream(pathToFile);
+	const reader = readline.createInterface({ input: readable });
+	const line = await new Promise((resolve) => {
+		reader.on('line', (line) => {
+			reader.close();
+			resolve(line);
+		});
+	});
+	readable.close();
+	return line;
 }
 
 // JV. 03-15-2021: Manually merged branches
 app.post("/webcrawl", async function(req, res) {
 	let doCrawl = false;
 	let target = req.body.searchTerm;
-	let timeStamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') + "\n";
+	let timeStamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 	let productsFile = "./Web-Crawler/cachedResults/" + target + "-products.txt";
 	let projectsFile = "./Web-Crawler/cachedResults/" + target + "-projects.txt";
 	console.log(`Received JSON response. Searching for ${target}`);
@@ -113,6 +113,7 @@ app.post("/webcrawl", async function(req, res) {
 	let json = req.body;
 	json['products'] = products;
 	json['projects'] = projects;
+	json['crawled'] = doCrawl;
 	res.json(json);
 	res.end();
 });
