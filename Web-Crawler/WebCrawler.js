@@ -68,7 +68,7 @@ async function kaplanco(res, target, site, productsFile) {
 			title = title.toLowerCase();
 			let link = products[i].attribs.href;
 			if(title.includes(target)) {
-				let source = site.substr(0,24) + link + "\n";
+				let source = "\n" + site.substr(0,24) + link;
 				//console.log(source);
 				results.push(source);       // link for products just has domain name with href
 			}
@@ -97,7 +97,7 @@ async function pinterest(res, target, site, projectsFile) {
 			let link = obj.attribs.href;
 			if(title != undefined && title.includes(target)) {
 				//                console.log(obj.attribs.title + "\n" + site.substr(0, 25) + link);
-				let source = site.substr(0,25) + link + "\n";
+				let source = "\n" + site.substr(0,25) + link;
 				//console.log(source);
 				results.push(source);
 			}
