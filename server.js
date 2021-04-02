@@ -1,13 +1,13 @@
-const express = require ('express');
-const mongoose = require ('mongoose');
-const cors = require ('cors');
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv').config()
 
 /* Import Routers */
-const priceRouter = require ('./routes/prices.js');
-const usersRouter = require ('./routes/user.js');
-const forgotPassRouter = require ('./routes/forgotPass.js');
-const resetPassRouter = require ('./routes/resetPass.js');
+const priceRouter = require('./routes/prices.js');
+const usersRouter = require('./routes/user.js');
+const forgotPassRouter = require('./routes/forgotPass.js');
+const resetPassRouter = require('./routes/resetPass.js');
 const fs = require('fs');
 const readline = require('readline');
 let WC = require("./Web-Crawler/WebCrawler.js");
@@ -52,70 +52,103 @@ async function getFirstLine(pathToFile) {
 }
 
 // JV. 03-15-2021: Manually merged branches
-app.post("/webcrawl", async function(req, res) {
-	let doCrawl = false;
-	let target = req.body.searchTerm;
-	let timeStamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-	let productsFile = "./Web-Crawler/cachedResults/" + target + "-products.txt";
-	let projectsFile = "./Web-Crawler/cachedResults/" + target + "-projects.txt";
-	console.log(`Received JSON response. Searching for ${target}`);
-	// Check if these files exist
-	try {
-		if(await fs.existsSync(productsFile)) {
-			// Check date if it does exist
-			let fileDate = await getFirstLine(productsFile);
-			let i = 0;
-			for(i; i<fileDate.length; i++) {
-				if(fileDate[i] != timeStamp[i]) break;
-			}
-			if(i > 10) {
-				// Don't web crawl, return cached results
-				doCrawl = false;
-				console.log("Found current files for " + target + ". Will send cached results.");
-			} else {
-				// Update stored results
-				doCrawl = true;
-				console.log("Products & Projects files for " + target + " are outdated. Will create new files.");
-				await fs.writeFile(productsFile, timeStamp, async function(err) {
-					if(err) throw err;
-				});
-				await fs.writeFile(projectsFile, timeStamp, async function(err) {
-					if(err) throw err;
-				});
-			}
-		} else {
-			doCrawl = true;
-			console.log("Products & Projects files not found for " + target + ". Will create new files.");
-			await fs.writeFile(productsFile, timeStamp, async function(err) {
-				if(err) throw err;
-			});
-			await fs.writeFile(projectsFile, timeStamp, async function(err) {
-				if(err) throw err;
-			});
-		}
-	} catch(err) {
-		console.log(err);
-	}
-	if(doCrawl) {
-		// All results will be written to files
-		for(let idx = 0; idx < sites.length; idx++) {
-			try {
-				await WC.crawl(idx, sites[idx], target, productsFile, projectsFile);
-			} catch(err) {
-				console.log(err);
-			}
-		}
-		console.log("Finished web crawling");
-	}
-	// Read & Send results
-	let products = fs.readFileSync(productsFile).toString().split("\n").splice(1);
-	let projects = fs.readFileSync(projectsFile).toString().split("\n").splice(1);
+app.post("/webcrawl", async function (req, res) {
 	let json = req.body;
-	json['products'] = products;
-	json['projects'] = projects;
-	json['crawled'] = doCrawl;
-	res.json(json);
-	res.end();
+	console.log("running")
+	let crawlLogic = async () => {
+		console.log("in Logic")
+
+		let doCrawl = false;
+		let target = req.body.searchTerm;
+		let timeStamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+		let productsFile = "./Web-Crawler/cachedResults/" + target + "-products.txt";
+		let projectsFile = "./Web-Crawler/cachedResults/" + target + "-projects.txt";
+		console.log(`Received JSON response. Searching for ${target}`);
+		// Check if these files exist
+		try {
+			if (await fs.existsSync(productsFile)) {
+				// Check date if it does exist
+				let fileDate = await getFirstLine(productsFile);
+				let i = 0;
+				for (i; i < fileDate.length; i++) {
+					if (fileDate[i] != timeStamp[i]) break;
+				}
+				if (i > 10) {
+					// Don't web crawl, return cached results
+					doCrawl = false;
+					console.log("Found current files for " + target + ". Will send cached results.");
+				} else {
+					// Update stored results
+					doCrawl = true;
+					console.log("Products & Projects files for " + target + " are outdated. Will create new files.");
+					await fs.writeFile(productsFile, timeStamp, async function (err) {
+						if (err) throw err;
+					});
+					await fs.writeFile(projectsFile, timeStamp, async function (err) {
+						if (err) throw err;
+					});
+				}
+			} else {
+				doCrawl = true;
+				console.log("Products & Projects files not found for " + target + ". Will create new files.");
+				await fs.writeFile(productsFile, timeStamp, async function (err) {
+					if (err) throw err;
+				});
+				await fs.writeFile(projectsFile, timeStamp, async function (err) {
+					if (err) throw err;
+				});
+			}
+		} catch (err) {
+			console.log(err);
+		}
+		if (doCrawl) {
+			// All results will be written to files
+			for (let idx = 0; idx < sites.length; idx++) {
+				try {
+					await WC.crawl(idx, sites[idx], target, productsFile, projectsFile);
+				} catch (err) {
+					console.log(err);
+				}
+			}
+			console.log("Finished web crawling");
+		}
+		// Read & Send results
+		let products = fs.readFileSync(productsFile).toString().split("\n").splice(1);
+		let projects = fs.readFileSync(projectsFile).toString().split("\n").splice(1);
+		json['products'] = products;
+		json['projects'] = projects;
+		json['crawled'] = doCrawl;
+		return doCrawl;
+	}
+
+	const MAX_ATTEMPTS = 20;
+	let responseAttempts = 0;
+	let sent = false;
+	let sendBack = setInterval(function (){
+		console.log("doing this");
+		crawlLogic()
+		.then(didCrawl => {
+			console.log(didCrawl)
+			if(responseAttempts === MAX_ATTEMPTS){
+				console.log("Too many Attemps, killing timout")
+				res.end();
+				clearInterval(sendBack);
+				return;
+			}
+			if(didCrawl === false){
+				if(!sent){
+					res.json(json);
+					res.end();
+					sent = true;
+				}
+				console.log("killing timeout")
+				clearInterval(sendBack);
+			} else {
+				console.log("running again")
+			}
+		}).catch(err => console.log(err))
+		console.log("attempts: ", responseAttempts)
+	}, 2000)
 });
 
 
