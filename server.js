@@ -59,7 +59,7 @@ app.post("/webcrawl", async function (req, res) {
 		console.log("in Logic")
 
 		let doCrawl = false;
-		let target = req.body.searchTerm;
+		let target = req.body.searchTerm.toLowerCase();
 		let timeStamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 		let productsFile = "./Web-Crawler/cachedResults/" + target + "-products.txt";
 		let projectsFile = "./Web-Crawler/cachedResults/" + target + "-projects.txt";
@@ -148,7 +148,7 @@ app.post("/webcrawl", async function (req, res) {
 			}
 		}).catch(err => console.log(err))
 		console.log("attempts: ", responseAttempts)
-	}, 2000)
+	}, 10000)
 });
 
 
