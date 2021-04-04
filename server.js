@@ -80,7 +80,7 @@ app.post("/webcrawl", async function(req, res) {
 	console.log(`Received JSON response. Searching for ${target}`);
 	// Check if these files exist
 	try {
-		if(await fs.existsSync(productsFile)) {
+		if(fs.existsSync(productsFile)) {
 			// Check date if it does exist
 			let fileDate = await getFirstLine(productsFile);
 			let i = 0;
@@ -95,20 +95,20 @@ app.post("/webcrawl", async function(req, res) {
 				// Update stored results
 				doCrawl = true;
 				console.log("Products & Projects files for " + target + " are outdated. Will create new files.");
-				await fs.writeFile(productsFile, timeStamp, async function(err) {
+				await fs.writeFile(productsFile, timeStamp, function(err) {
 					if(err) throw err;
 				});
-				await fs.writeFile(projectsFile, timeStamp, async function(err) {
+				await fs.writeFile(projectsFile, timeStamp, function(err) {
 					if(err) throw err;
 				});
 			}
 		} else {
 			doCrawl = true;
 			console.log("Products & Projects files not found for " + target + ". Will create new files.");
-			await fs.writeFile(productsFile, timeStamp, async function(err) {
+			await fs.writeFile(productsFile, timeStamp, function(err) {
 				if(err) throw err;
 			});
-			await fs.writeFile(projectsFile, timeStamp, async function(err) {
+			await fs.writeFile(projectsFile, timeStamp, function(err) {
 				if(err) throw err;
 			});
 		}
@@ -119,7 +119,7 @@ app.post("/webcrawl", async function(req, res) {
 		// All results will be written to files
 		for(let idx = 0; idx < sites.length; idx++) {
 			try {
-				await WC.crawl(idx, sites[idx], target, productsFile, projectsFile);
+				WC.crawl(idx, sites[idx], target, productsFile, projectsFile);
 			} catch(err) {
 				console.log(err);
 			}

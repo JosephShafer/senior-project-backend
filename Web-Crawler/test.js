@@ -23,7 +23,7 @@ let sites = ["https://www.kaplanco.com/shop/arts-and-crafts/collage-and-craft-ma
     "https://www.artycraftykids.com/art/",
     "https://www.artycraftykids.com/craft/",
 ]
-let target = "card";
+let target = "glue";
 let productsFile = "./cachedResults/test-products.txt";
 let projectsFile = "./cachedResults/test-projects.txt";
 fs.writeFile(productsFile, "timeStamp", async function(err) {

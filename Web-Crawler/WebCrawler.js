@@ -5,12 +5,12 @@
 // J.V. Update 03-01-2021: Links to products and project ideas are now written to files
 
 let Crawler = require("crawler");
-let fs = require("fs").promises;
+let fs = require("fs");
 
 // Main function
-async function crawl(idx, site, target, productsFile, projectsFile) {
+function crawl(idx, site, target, productsFile, projectsFile) {
 	let crawler = new Crawler({
-		callback: async function(err, res, done) {
+		callback: function(err, res, done) {
 			if(err) {
 				console.log(err);
 			} else {
@@ -159,7 +159,7 @@ async function crawl(idx, site, target, productsFile, projectsFile) {
 }
 
 // Individual web page traversal
-async function kaplanco(res, target, site, productsFile) {
+function kaplanco(res, target, site, productsFile) {
 	let results = new Array();
 	let $ = res.$;      // $ = Cheerio
 	let products = $(".product-info").contents();
@@ -178,8 +178,8 @@ async function kaplanco(res, target, site, productsFile) {
 	}
 	for(let i=0; i<results.length; i++) {
 		try {
-			await fs.appendFile(productsFile, results[i], async function(err) {
-				if(err) return await console.log(err);
+			fs.appendFileSync(productsFile, results[i], function(err) {
+				if(err) throw err;
 			});
 		} catch(err) {
 			console.log(err);
@@ -187,21 +187,28 @@ async function kaplanco(res, target, site, productsFile) {
 	}
 }
 
-async function michaels(res, target, site, productsFile) {
+function michaels(res, target, site, productsFile) {
 	let results = new Array();
 	let $ = res.$;
+	let domain = "https://www.michaels.com";
 	let products = $(".thumb-link");
 	for(let i=0; i<products.length; i++) {
 		let title = products[i].attribs.title.toLowerCase();
-		let link = "\nhttps://www.michaels.com" + products[i].attribs.href;
+		let link = "";
+		let href = products[i].attribs.href;
+		if(!href.includes(domain)) {
+			link = "\n" + domain + href;
+		} else {
+			link = "\n" + href;
+		}
 		if(title.includes(target)) {
 			results.push(link);
 		}
 	}
 	for(let i=0; i<results.length; i++) {
 		try {
-			await fs.appendFile(productsFile, results[i], async function(err) {
-				if(err) return await console.log(err);
+			fs.appendFileSync(productsFile, results[i], function(err) {
+				if(err) throw err;
 			});
 		} catch(err) {
 			console.log(err);
@@ -209,7 +216,7 @@ async function michaels(res, target, site, productsFile) {
 	}
 }
 
-async function artyCrafty(res, target, site, projectsFile) {
+function artyCrafty(res, target, site, projectsFile) {
 	let results = new Array();
 	let $ = res.$;
 	let ideas = $(".elementor-post__title").contents();
@@ -224,8 +231,8 @@ async function artyCrafty(res, target, site, projectsFile) {
 	}
 	for(let i=0; i<results.length; i++) {
 		try {
-			await fs.appendFile(projectsFile, results[i], async function(err) {
-				if(err) return await console.log(err);
+			fs.appendFileSync(projectsFile, results[i], function(err) {
+				if(err) throw err;
 			});
 		} catch(err) {
 			console.log(err);
@@ -233,7 +240,7 @@ async function artyCrafty(res, target, site, projectsFile) {
 	}
 }
 
-async function pinterest(res, target, site, projectsFile) {
+function pinterest(res, target, site, projectsFile) {
 	let results = new Array();
 	let $ = res.$;
 	let ideas = $(".GrowthUnauthPinImage").contents();
@@ -253,8 +260,8 @@ async function pinterest(res, target, site, projectsFile) {
 	}
 	for(let i=0; i<results.length; i++) {
 		try {
-			await fs.appendFile(projectsFile, results[i], async function(err) {
-				if(err) return console.log(err);
+			fs.appendFileSync(projectsFile, results[i], function(err) {
+				if(err) throw err;
 			});
 		} catch(err) {
 			console.log(err);
