@@ -6,18 +6,6 @@
 
 let Crawler = require("crawler");
 let fs = require("fs").promises;
-/*
-try {
-	    fs.unlinkSync(productsFile);
-} catch(err) {
-	    console.log("Products file not found. Will generate new one on search\n");
-}
-try {
-	    fs.unlinkSync(projectsFile);
-} catch(err) {
-	    console.log("Projects file not found. Will generate new one on search\n");
-}
-*/
 
 // Main function
 async function crawl(idx, site, target, productsFile, projectsFile) {
@@ -33,12 +21,22 @@ async function crawl(idx, site, target, productsFile, projectsFile) {
 					case 1:
 						pinterest(res, target, site, projectsFile);
 						break;
+					case 17:
+						artyCrafty(res, target, site, projectsFile);
+						break;
+					case 18:
+						artyCrafty(res, target, site, projectsFile);
+						break;
+					default:
+						// choices 2 - 16 are Michaels
+						michaels(res, target, site, productsFile);
+						break;
 				}
 			}
 			done();
 		}
 	});
-
+	let numPages = 0;
 	// Traversing through result pages
 	switch(idx) {
 		case 0:
@@ -52,6 +50,110 @@ async function crawl(idx, site, target, productsFile, projectsFile) {
 		case 1:
 			// Pinterest
 			crawler.queue(site);
+			break;
+		case 2:
+			// Michaels - buttons section
+			crawler.queue(site);
+			break;
+		case 3:
+			// Michaels - fabrics section
+			crawler.queue(site);
+			// Page 2
+			crawler.queue(site + "?page=2");
+			break;
+		case 4:
+			// Michaels - wood section
+			crawler.queue(site);
+			// Page 2
+			crawler.queue(site + "?page=2");
+			break;
+		case 5:
+			// Michaels - feather section
+			crawler.queue(site);
+			// Page 2
+			crawler.queue(site + "?page=2");
+			break;
+		case 6:
+			// Michaels - glitter section
+			crawler.queue(site);
+			numPages = 3;
+			for(let i=2; i<=numPages; i++) {
+				crawler.queue(site + "?page=" + i);
+			}
+			break;
+		case 7:
+			// Michaels - glue section
+			crawler.queue(site);
+			numPages = 32;
+			for(let i=2; i<=numPages; i++) {
+				crawler.queue(site + "?page=" + i);
+			}
+			break;
+		case 8:
+			// Michaels - google eyes section
+			crawler.queue(site);
+			break;
+		case 9:
+			// Michaels - magnets section
+			crawler.queue(site);
+			break;
+		case 10:
+			// Michaels - miniatures section
+			crawler.queue(site);
+			numPages = 19;
+			for(let i=2; i<=numPages; i++) {
+				crawler.queue(site + "?page=" + i);
+			}
+			break;
+		case 11:
+			// Michaels - mirrors section
+			crawler.queue(site);
+			numPages = 6;
+			for(let i=2; i<=numPages; i++) {
+				crawler.queue(site + "?page=" + i);
+			}
+			break;
+		case 12:
+			// Michaels - origami section
+			crawler.queue(site);
+			break;
+		case 13:
+			// Michaels - paper mache section
+			crawler.queue(site);
+			break;
+		case 14:
+			// Michaels - pom poms & pipe cleaners section
+			crawler.queue(site);
+			break;
+		case 15:
+			// Michaels - styrofoam section
+			crawler.queue(site);
+			// Page 2
+			crawler.queue(site + "?page=2");
+			break;
+		case 16:
+			// Michaels - tools section
+			crawler.queue(site);
+			numPages = 6;
+			for(let i=2; i<=numPages; i++) {
+				crawler.queue(site + "?page=" + i);
+			}
+			break;
+		case 17:
+			// Arty Crafty - Art section 
+			crawler.queue(site);
+			numPages = 17;
+			for(let i=2; i<=numPages; i++) {
+				crawler.queue(site + "page/" + i + "/");
+			}
+			break;
+		case 18:
+			// Arty Crafty - Craft section 
+			crawler.queue(site);
+			numPages = 26;
+			for(let i=2; i<=numPages; i++) {
+				crawler.queue(site + "page/" + i + "/");
+			}
 			break;
 		}
 }
@@ -77,6 +179,52 @@ async function kaplanco(res, target, site, productsFile) {
 	for(let i=0; i<results.length; i++) {
 		try {
 			await fs.appendFile(productsFile, results[i], async function(err) {
+				if(err) return await console.log(err);
+			});
+		} catch(err) {
+			console.log(err);
+		}
+	}
+}
+
+async function michaels(res, target, site, productsFile) {
+	let results = new Array();
+	let $ = res.$;
+	let products = $(".thumb-link");
+	for(let i=0; i<products.length; i++) {
+		let title = products[i].attribs.title.toLowerCase();
+		let link = "\nhttps://www.michaels.com" + products[i].attribs.href;
+		if(title.includes(target)) {
+			results.push(link);
+		}
+	}
+	for(let i=0; i<results.length; i++) {
+		try {
+			await fs.appendFile(productsFile, results[i], async function(err) {
+				if(err) return await console.log(err);
+			});
+		} catch(err) {
+			console.log(err);
+		}
+	}
+}
+
+async function artyCrafty(res, target, site, projectsFile) {
+	let results = new Array();
+	let $ = res.$;
+	let ideas = $(".elementor-post__title").contents();
+	for(let i=0; i<ideas.length; i++) {
+		if(ideas[i].type == "tag") {
+			let title = ideas[i].children[0].data.toLowerCase();
+			let link = "\n" + ideas[i].attribs.href;
+			if(title.includes(target)) {
+				results.push(link);
+			}
+		}
+	}
+	for(let i=0; i<results.length; i++) {
+		try {
+			await fs.appendFile(projectsFile, results[i], async function(err) {
 				if(err) return await console.log(err);
 			});
 		} catch(err) {
