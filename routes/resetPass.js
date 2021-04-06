@@ -23,7 +23,8 @@ router.get('/', (req, res) => {
 // store new hashed password
 router.put('/', (req, res) => {
     const { token, newPass } = req.body;
-    bcrypt.hash(newPass, 10, (err, hash) => {
+    const saltRounds = 10;
+    bcrypt.hash(newPass, saltRounds, (err, hash) => {
         if (err) {
             res.status(422).json({success: false, msg: err});
         } else {
