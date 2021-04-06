@@ -1,7 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-
-const SALT = 10;
 
 const userSchema = mongoose.Schema({
     firstName: {
@@ -33,34 +30,5 @@ const userSchema = mongoose.Schema({
     reset_password_token: String,
     reset_password_expires: {type: Date, default: Date.now}
 });
-
-// bcrypt
-userSchema.pre('save', function(next){
-    var aUser = this;
-    if (aUser.isModified('password')) {
-        bcrypt.genSalt(SALT, function(err, salt){
-            if (err) return next(err)
-            bcrypt.hash(aUser.password, salt, function(err, hash) {
-                if (err) return next(err)
-                aUser.password = hash;
-                next();
-            });
-        });
-    } else {
-        next();
-    }
-});
-
-// for comparing the users entered password with DB during login 
-userSchema.methods.comparePassword = function(clientPassword, callBack){
-    bcrypt.compare(clientPassword, aUser.password, function(err, isMatch){
-        if (err) return callBack(err);
-        else {
-            if(!isMatch)
-                callBack(null, isMatch);
-            return callBack(null, aUser);
-        }
-   });
-}
 
 module.exports = mongoose.model('user', userSchema);
