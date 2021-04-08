@@ -39,7 +39,7 @@ let sites = ["https://www.kaplanco.com/shop/arts-and-crafts/collage-and-craft-ma
     "https://www.artycraftykids.com/craft/",
 ]
 
-const port = process.env.PORT || 8001;
+const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
@@ -55,6 +55,7 @@ app.use('/signin', signInRouter);
 app.use('/signout', signOutRouter);
 
 // J.P: every user will be assigned a unique session
+
 app.use(session ({
 	secret: process.env.SESSION_SECRET,
 	resave: false,
@@ -98,6 +99,7 @@ async function getFirstLine(pathToFile) {
 // JV. 03-15-2021: Manually merged branches
 app.post("/webcrawl", async function(req, res) {
 	let doCrawl = false;
+	let waitTime = 4000;	// milliseconds
 	let target = req.body.searchTerm;
 	let timeStamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 	let productsFile = "./Web-Crawler/cachedResults/" + target + "-products.txt";
@@ -150,16 +152,28 @@ app.post("/webcrawl", async function(req, res) {
 			}
 		}
 		console.log("Finished web crawling");
+		let wait = setTimeout(function() {
+			 // Read & Send results
+			let products = fs.readFileSync(productsFile).toString().split("\n").splice(1);
+			let projects = fs.readFileSync(projectsFile).toString().split("\n").splice(1);
+			let json = req.body;
+			json['products'] = products;
+			json['projects'] = projects;
+			json['crawled'] = doCrawl;
+			res.json(json);
+			res.end();
+		}, waitTime);
+	} else {
+		// Read & Send results
+		let products = fs.readFileSync(productsFile).toString().split("\n").splice(1);
+		let projects = fs.readFileSync(projectsFile).toString().split("\n").splice(1);
+		let json = req.body;
+		json['products'] = products;
+		json['projects'] = projects;
+		json['crawled'] = doCrawl;
+		res.json(json);
+		res.end();
 	}
-	// Read & Send results
-	let products = fs.readFileSync(productsFile).toString().split("\n").splice(1);
-	let projects = fs.readFileSync(projectsFile).toString().split("\n").splice(1);
-	let json = req.body;
-	json['products'] = products;
-	json['projects'] = projects;
-	json['crawled'] = doCrawl;
-	res.json(json);
-	res.end();
 });
 
 
