@@ -1,6 +1,7 @@
 const express = require ('express');
 const mongoose = require ('mongoose');
 const cors = require ('cors');
+const session = require('express-session');
 require('dotenv').config()
 
 /* Import Routers */
@@ -8,6 +9,10 @@ const priceRouter = require ('./routes/prices.js');
 const usersRouter = require ('./routes/user.js');
 const forgotPassRouter = require ('./routes/forgotPass.js');
 const resetPassRouter = require ('./routes/resetPass.js');
+const signUpRouter = require('./routes/signUp.js');
+const signInRouter = require('./routes/signIn.js');
+const signOutRouter = require('./routes/signOut.js')
+
 const fs = require('fs');
 const readline = require('readline');
 let WC = require("./Web-Crawler/WebCrawler.js");
@@ -34,7 +39,7 @@ let sites = ["https://www.kaplanco.com/shop/arts-and-crafts/collage-and-craft-ma
     "https://www.artycraftykids.com/craft/",
 ]
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8001;
 const app = express();
 
 app.use(express.json());
@@ -43,8 +48,28 @@ app.use(cors({ origin: true, credentials: true }));
 /* Using Routers */
 app.use('/prices', priceRouter);
 app.use('/users', usersRouter);
-app.use('/forget_password', forgotPassRouter);
+app.use('/forgot_password', forgotPassRouter);
 app.use('/reset_password', resetPassRouter);
+app.use('/signup', signUpRouter);
+app.use('/signin', signInRouter);
+app.use('/signout', signOutRouter);
+
+// J.P: every user will be assigned a unique session
+app.use(session ({
+	secret: process.env.SESSION_SECRET,
+	resave: false,
+	saveUninitialized: false
+}));
+// J.P: Validate user other than signin & signup routers
+app.use((req, res, next) => {
+	if(req.originalUrl === '/signin' || req.originalUrl === '/signup')
+		return next();
+	if(!req.session.username) {
+		res.json({msg: 'User is not logged in'});
+		return;
+	}
+	next();
+});
 
 /* Connect to DB */
 mongoose.connect(process.env.MONGO_URI, {

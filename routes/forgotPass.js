@@ -8,7 +8,7 @@ require('dotenv').config();
 const router = express.Router();
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'Gmail',
     auth: {
         user: process.env.MAILER_EMAIL,
         pass: process.env.MAILER_PASSWORD
@@ -34,9 +34,8 @@ router.put('/', (req, res) => {
         })
         .then(user => {
             const token = user.reset_password_token;
-            const aws = process.env.AWS_URI;
             // encodes characters such as ?,=,/,&,:
-            const uri = encodeURIComponent(`://${aws}:19000/--/reset_password/${token}`);
+            const uri = encodeURIComponent(`://192.168.1.77:19000/--/reset_password/${token}`);
             const mailOptions = {
                 from: process.env.MAILER_EMAIL,
                 to: email,
@@ -54,11 +53,12 @@ router.put('/', (req, res) => {
                 </div>
                 `
             };
-            transporter.sendMail(mailOptions, (err, data) => {
+            transporter.sendMail(mailOptions, (err, info) => {
                 if (err) {
                     console.log(err);
                 } else {
                     console.log('Email was sent');
+                    res.status(200).json({success: true});
                 }
             })
         })
