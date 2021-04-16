@@ -8,7 +8,7 @@ const storeSchema = mongoose.Schema({
         zip: String,
         street: String
     },
-    prices:[{ date: {type: Date, default: Date.now}, amounts: Number }]
+    prices:[{ date: {type: Date, default: Date.now}, amounts: {type: Number, min: 0} }]
 });
 
 const priceSchema = mongoose.Schema({
