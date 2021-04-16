@@ -25,7 +25,7 @@ export default class App extends Component {
 	// Asks for permissions
 	async componentDidMount() {
 		const { status } = await Permissions.askAsync(Permissions.CAMERA);
-		this.setState({ hasPermission: status === 'granted' });
+		this.setState({ hasPermission: status === 'granted' });		// proper usage of '===' to ensure the type is the same, avoids type errors
 	}
 
 	takePicture = async () => {
