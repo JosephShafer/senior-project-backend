@@ -12,12 +12,14 @@ router.post('/', (req, res) => {
         bcrypt.compare(req.body.password, hashed)
         .then(result => {
             if (!result) throw new Error();
-            req.session.username = req.body;
+            // console.log(req.body)
+            req.session.username = req.body; 
             req.user = user;
-
+            
             // can't delete password so change it to undefined to hide it
             req.user.password = undefined;
             req.user.__v = undefined;
+            console.log(req.user)
             res.json({success: true, user: req.user});
         })
         .catch(() => 

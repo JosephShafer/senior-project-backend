@@ -45,6 +45,13 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 
+// J.P: every user will be assigned a unique session
+app.use(session ({
+	secret: process.env.SESSION_SECRET,
+	resave: false,
+	saveUninitialized: false
+}));
+
 /* Using Routers */
 app.use('/prices', priceRouter);
 app.use('/users', usersRouter);
@@ -54,12 +61,6 @@ app.use('/signup', signUpRouter);
 app.use('/signin', signInRouter);
 app.use('/signout', signOutRouter);
 
-// J.P: every user will be assigned a unique session
-app.use(session ({
-	secret: process.env.SESSION_SECRET,
-	resave: false,
-	saveUninitialized: false
-}));
 
 // J.P: Validate user for all routes, except '/signin', '/singup' and '/webcrawl'
 app.use((req, res, next) => {
