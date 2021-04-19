@@ -55,15 +55,15 @@ app.use('/signin', signInRouter);
 app.use('/signout', signOutRouter);
 
 // J.P: every user will be assigned a unique session
-
 app.use(session ({
 	secret: process.env.SESSION_SECRET,
 	resave: false,
 	saveUninitialized: false
 }));
-// J.P: Validate user other than signin & signup routers
+
+// J.P: Validate user for all routes, except '/signin', '/singup' and '/webcrawl'
 app.use((req, res, next) => {
-	if(req.originalUrl === '/signin' || req.originalUrl === '/signup')
+	if(req.originalUrl === '/signin' || req.originalUrl === '/signup' ||  req.originalUrl === '/webcrawl')
 		return next();
 	if(!req.session.username) {
 		res.json({msg: 'User is not logged in'});

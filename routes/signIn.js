@@ -14,6 +14,8 @@ router.post('/', (req, res) => {
             if (!result) throw new Error();
             req.session.username = req.body;
             req.user = user;
+
+            // can't delete password so change it to undefined to hide it
             req.user.password = undefined;
             req.user.__v = undefined;
             res.json({success: true, user: req.user});
@@ -23,7 +25,7 @@ router.post('/', (req, res) => {
         ));
     })
     .catch(err => 
-        res.json({msg: "Sign in failed"}, console.log(err)
+        res.json({msg: "Sign in failed"}
     ))
 })
 
