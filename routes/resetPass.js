@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
             if (!user) {
                 res.json({success: false, msg: "Reset passwork link is invalid/expired!"});
             } else {
-                res.status(200).json({success: true})
+                res.status(200).json({success: true, email: user.email, username: user.username})
             }
         })
         .catch(err => console.log("Error when opening link: " + err));   
@@ -22,9 +22,9 @@ router.get('/', (req, res) => {
 
 // store new hashed password
 router.put('/', (req, res) => {
-    const { token, newPass } = req.body;
+    const { token, newPW } = {...req.body};
     const saltRounds = 10;
-    bcrypt.hash(newPass, saltRounds, (err, hash) => {
+    bcrypt.hash(newPW, saltRounds, (err, hash) => {
         if (err) {
             res.status(422).json({success: false, msg: err});
         } else {
