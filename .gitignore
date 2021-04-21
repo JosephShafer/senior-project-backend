@@ -3,3 +3,5 @@ Web-Crawler/cachedResults/
 */config.json
 .env
 .js.env
+config.json
+*.env
