@@ -1,4 +1,4 @@
 node_modules/
 Web-Crawler/cachedResults/
 config.json
-.env
+*.env

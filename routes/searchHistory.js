@@ -16,13 +16,24 @@ router.post("/", (req, res) => {
 
 router.get("/", (req, res) => {
     //console.log("GOT THIS FAR");
-    Searches.find((err, data) => {
-        if (err) {
-            console.log(err);
-        } else{
-            res.status(200).send(data);
-        }
-    });
+    // Searches.findOne()
+    // Searches.find((err, data) => {
+    //     if (err) {
+    //         console.log(err);
+    //     } else{
+    //         res.status(200).send(data);
+    //     }
+    // });
+});
+
+router.post("/getUsersResults", (req, res) => {
+    let email = req.body.email;
+    console.log(email);
+    Searches.findOne({email})
+    .then(user => {
+        console.log(user.searchTerms);
+        res.json({usersSearches: user.searchTerms});
+    })
 });
 
 router.put("/", (req, res) => {
