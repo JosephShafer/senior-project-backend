@@ -4,7 +4,7 @@ const Searches = require('../models/search.js');
 const router = express.Router();
 
 router.post("/", (req, res) => {
-    console.log("GOT THIS FAR");
+    //console.log("GOT THIS FAR");
     const dbSearch = req.body;
     Searches
         .create(dbSearch)
@@ -15,7 +15,7 @@ router.post("/", (req, res) => {
 });
 
 router.get("/", (req, res) => {
-    console.log("GOT THIS FAR");
+    //console.log("GOT THIS FAR");
     Searches.find((err, data) => {
         if (err) {
             console.log(err);
@@ -32,7 +32,7 @@ router.put("/", (req, res) => {
     Searches.updateOne(
         { email: dbSearch.email },
         {
-            $set: {"searchTerms": dbSearch.searchTerms} 
+            $push: {searchTerms: dbSearch.searchTerms} 
         }
     )
     .then(result => 
