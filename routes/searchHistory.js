@@ -4,7 +4,7 @@ const Searches = require('../models/search.js');
 const router = express.Router();
 
 router.post("/", (req, res) => {
-    //console.log("GOT THIS FAR");
+    // console.log("GOT THIS FAR");
     const dbSearch = req.body;
     Searches
         .create(dbSearch)
@@ -15,15 +15,14 @@ router.post("/", (req, res) => {
 });
 
 router.get("/", (req, res) => {
-    //console.log("GOT THIS FAR");
-    // Searches.findOne()
-    // Searches.find((err, data) => {
-    //     if (err) {
-    //         console.log(err);
-    //     } else{
-    //         res.status(200).send(data);
-    //     }
-    // });
+    // console.log("GOT THIS FAR");
+    Searches.find((err, data) => {
+        if (err) {
+            console.log(err);
+        } else{
+            res.status(200).send(data);
+        }
+    });
 });
 
 router.post("/getUsersResults", (req, res) => {
