@@ -25,4 +25,20 @@ router.get("/", (req, res) => {
     });
 });
 
+router.put("/", (req, res) => {
+    const dbSearch = req.body;
+    console.log("DB HERE");
+    console.log(dbSearch.searchTerms);
+    Searches.updateOne(
+        { email: dbSearch.email },
+        {
+            $set: {"searchTerms": dbSearch.searchTerms} 
+        }
+    )
+    .then(result => 
+        res.status(200).json({success: true, result})
+    )
+    .catch(err => console.log(err));
+});
+
 module.exports = router;

@@ -13,7 +13,6 @@ const searchSchema = mongoose.Schema({
         type: [{type: String}],
         required: [true, 'search term is required'],
         trim: true,
-        unique: true,
         minlength: 4,
         maxlength: 20
     },
