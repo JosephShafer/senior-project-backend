@@ -38,6 +38,7 @@ router.put('/', (req, res) => {
                 },
             )
             .then(() => console.log('Password update successful'))
+            .then(() => res.status(200).send())
             .catch(err => console.log("Error when updating password: " + err));
         }
     });
