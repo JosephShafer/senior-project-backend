@@ -54,7 +54,7 @@ router.put('/', (req, res) => {
                     <h3>Dear ${user.username},</h3>
                     <p>You've requested to reset your password, click the link below to do so.</p>
                     <br>
-                    <a href=${link + '?ResetPasswordToken=' + token}>${link + '?ResetPasswordToken=' + token}</a>
+                    <a href="${link + '?ResetPasswordToken=' + token}>${link + '?ResetPasswordToken=' + token}"</a>
                     <br>
                     <p>If you did not request this, ignore this email and your password will not change.</p>
                     <p>Thanks!</p>
