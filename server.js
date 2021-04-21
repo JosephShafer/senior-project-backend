@@ -12,6 +12,7 @@ const resetPassRouter = require ('./routes/resetPass.js');
 const signUpRouter = require('./routes/signUp.js');
 const signInRouter = require('./routes/signIn.js');
 const signOutRouter = require('./routes/signOut.js')
+const searchHistoryRouter = require('./routes/searchHistory.js')
 
 const fs = require('fs');
 const readline = require('readline');
@@ -60,11 +61,13 @@ app.use('/reset_password', resetPassRouter);
 app.use('/signup', signUpRouter);
 app.use('/signin', signInRouter);
 app.use('/signout', signOutRouter);
+app.use('/searchhistory', searchHistoryRouter);
 
 
 // J.P: Validate user for all routes, except '/signin', '/singup' and '/webcrawl'
 app.use((req, res, next) => {
-	if(req.originalUrl === '/signin' || req.originalUrl === '/signup' ||  req.originalUrl === '/webcrawl')
+	if(req.originalUrl === '/signin' || req.originalUrl === '/signup' ||  
+	req.originalUrl === '/webcrawl' || req.originalUrl === '/searchhistory')
 		return next();
 	if(!req.session.username) {
 		res.json({msg: 'User is not logged in'});
