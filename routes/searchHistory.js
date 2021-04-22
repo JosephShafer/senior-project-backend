@@ -35,8 +35,11 @@ router.post("/getUsersResults", (req, res) => {
     console.log(email);
     Searches.findOne({email})
     .then(user => {
-        console.log(user.searchTerms);
-        res.json({usersSearches: user.searchTerms});
+        let filtered = user.searchTerms.filter(function (el) {
+            return (el != null && el != '');
+        });
+          console.log(filtered);
+        res.json({usersSearches: filtered});
     })
     .catch(e => {
         console.log("User has no searches")
@@ -47,7 +50,6 @@ router.post("/getUsersResults", (req, res) => {
 router.put("/", (req, res) => {
     const dbSearch = req.body;
     console.log("DB HERE");
-    console.log(dbSearch.searchTerms);
     Searches.updateOne(
         { email: dbSearch.email },
         {
